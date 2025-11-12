@@ -1,6 +1,4 @@
-﻿using Marmary.HellmenRaaun.Application.Global;
-using Marmary.SettingsSystem.UnitySettings;
-using UIWidgets;
+﻿using UIWidgets;
 using UIWidgets.Extensions;
 using UnityEngine;
 using VContainer;
@@ -22,22 +20,22 @@ namespace Marmary.SettingsSystem.UnityComponents
         private ComboboxString _combobox;
 
         /// <summary>
-        ///     Reference to the resolution settings manager.
+        ///     Reference to the injected resolution settings configuration.
         /// </summary>
-        private ResolutionSettings _resolutionSettings;
+        private SettingsConfigureBase<Vector2Int> _resolutionSettings;
 
         #endregion
 
         #region Constructors and Injected
 
         /// <summary>
-        ///     Injects the <see cref="SettingsManager" /> dependency and retrieves the <see cref="ResolutionSettings" />.
+        ///     Injects the keyed resolution settings dependency used for combobox population.
         /// </summary>
-        /// <param name="settingsManager">The settings manager instance.</param>
+        /// <param name="resolutionSettings">The keyed settings instance for resolution configuration.</param>
         [Inject]
-        public void Construct(SettingsManager settingsManager)
+        public void Construct([Key(SettingsType.Resolution)] SettingsConfigureBase<Vector2Int> resolutionSettings)
         {
-            _resolutionSettings = settingsManager.ResolutionSettings as ResolutionSettings;
+            _resolutionSettings = resolutionSettings;
         }
 
         #endregion

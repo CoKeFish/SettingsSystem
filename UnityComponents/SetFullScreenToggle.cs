@@ -1,5 +1,3 @@
-using Marmary.HellmenRaaun.Application.Global;
-using Marmary.SettingsSystem.UnitySettings;
 using UnityEngine;
 using UnityEngine.UI;
 using VContainer;
@@ -15,9 +13,9 @@ namespace Marmary.SettingsSystem.UnityComponents
         #region Fields
 
         /// <summary>
-        ///     Reference to the full screen settings manager.
+        ///     Reference to the injected full screen settings configuration.
         /// </summary>
-        private FullScreenSettings _fullScreenSettings;
+        private SettingsConfigureBase<bool> _fullScreenSettings;
 
         /// <summary>
         ///     Reference to the UI Toggle component.
@@ -29,13 +27,13 @@ namespace Marmary.SettingsSystem.UnityComponents
         #region Constructors and Injected
 
         /// <summary>
-        ///     Injects the <see cref="SettingsManager" /> dependency and retrieves the <see cref="FullScreenSettings" />.
+        ///     Injects the keyed fullscreen settings dependency used to synchronize the toggle.
         /// </summary>
-        /// <param name="settingsManager">The settings manager containing full screen settings.</param>
+        /// <param name="fullScreenSettings">The keyed settings instance for fullscreen configuration.</param>
         [Inject]
-        public void Construct(SettingsManager settingsManager)
+        public void Construct([Key(SettingsType.Fullscreen)] SettingsConfigureBase<bool> fullScreenSettings)
         {
-            _fullScreenSettings = settingsManager.FullScreenSettings as FullScreenSettings;
+            _fullScreenSettings = fullScreenSettings;
         }
 
         #endregion
