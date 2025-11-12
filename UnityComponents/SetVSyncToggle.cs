@@ -1,5 +1,3 @@
-using Marmary.HellmenRaaun.Application.Global;
-using Marmary.SettingsSystem.UnitySettings;
 using UnityEngine;
 using UnityEngine.UI;
 using VContainer;
@@ -15,27 +13,27 @@ namespace Marmary.SettingsSystem.UnityComponents
         #region Fields
 
         /// <summary>
+        ///     Reference to the injected VSync settings configuration.
+        /// </summary>
+        private SettingsConfigureBase<bool> _vSyncSettings;
+
+        /// <summary>
         ///     Reference to the UI Toggle component.
         /// </summary>
         private Toggle _toggle;
-
-        /// <summary>
-        ///     Reference to the VSync settings manager.
-        /// </summary>
-        private VSyncSettings _vSyncSettings;
 
         #endregion
 
         #region Constructors and Injected
 
         /// <summary>
-        ///     Injects the <see cref="VSyncSettings" /> dependency.
+        ///     Injects the keyed VSync settings dependency.
         /// </summary>
-        /// <param name="settingsManager"> The settings manager containing the VSync settings.</param>
+        /// <param name="vSyncSettings">The keyed settings instance for VSync configuration.</param>
         [Inject]
-        public void Construct(SettingsManager settingsManager)
+        public void Construct([Key(SettingsType.VSync)] SettingsConfigureBase<bool> vSyncSettings)
         {
-            _vSyncSettings = settingsManager.VSyncSettings as VSyncSettings;
+            _vSyncSettings = vSyncSettings;
         }
 
         #endregion

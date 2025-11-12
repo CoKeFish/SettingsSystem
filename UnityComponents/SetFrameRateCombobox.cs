@@ -1,6 +1,4 @@
-﻿using Marmary.HellmenRaaun.Application.Global;
-using Marmary.SettingsSystem.UnitySettings;
-using UIWidgets;
+﻿using UIWidgets;
 using UIWidgets.Extensions;
 using UnityEngine;
 using VContainer;
@@ -17,27 +15,27 @@ namespace Marmary.SettingsSystem.UnityComponents
         #region Fields
 
         /// <summary>
+        ///     Reference to the injected frame rate settings configuration.
+        /// </summary>
+        private SettingsConfigureBase<int> _frameRateSettings;
+
+        /// <summary>
         ///     Reference to the ComboboxString component used for frame rate selection.
         /// </summary>
         private ComboboxString _combobox;
-
-        /// <summary>
-        ///     Reference to the frame rate settings.
-        /// </summary>
-        private FrameRateSettings _frameRateSettings;
 
         #endregion
 
         #region Constructors and Injected
 
         /// <summary>
-        ///     Injects the <see cref="SettingsManager" /> dependency and retrieves the <see cref="FrameRateSettings" />.
+        ///     Injects the keyed frame rate settings dependency used to populate the combobox.
         /// </summary>
-        /// <param name="settingsManager">The settings manager instance.</param>
+        /// <param name="frameRateSettings">The keyed settings instance for frame rate configuration.</param>
         [Inject]
-        public void Construct(SettingsManager settingsManager)
+        public void Construct([Key(SettingsType.FrameRate)] SettingsConfigureBase<int> frameRateSettings)
         {
-            _frameRateSettings = settingsManager.FrameRateSettings as FrameRateSettings;
+            _frameRateSettings = frameRateSettings;
         }
 
         #endregion

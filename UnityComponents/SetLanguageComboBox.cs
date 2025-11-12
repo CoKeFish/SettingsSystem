@@ -1,6 +1,4 @@
 ﻿using System;
-using Marmary.HellmenRaaun.Application.Global;
-using Marmary.SettingsSystem.UnitySettings;
 using UIWidgets;
 using UIWidgets.Extensions;
 using UnityEngine;
@@ -10,7 +8,7 @@ namespace Marmary.SettingsSystem.UnityComponents
 {
     /// <summary>
     ///     Handles the initialization and value changes of the ComboboxString for language selection.
-    ///     Integrates with <see cref="I2LanguageSettings" /> to reflect and update the current language.
+    ///     Integrates with the injected language settings to reflect and update the current language.
     /// </summary>
     [RequireComponent(typeof(ComboboxString))]
     public class SetLanguageComboBox : MonoBehaviour
@@ -23,22 +21,22 @@ namespace Marmary.SettingsSystem.UnityComponents
         private ComboboxString _combobox;
 
         /// <summary>
-        ///     Reference to the LanguageSettings instance used to get and set the current language.
+        ///     Reference to the injected language settings configuration.
         /// </summary>
-        private I2LanguageSettings _i2LanguageSettings;
+        private SettingsConfigureBase<string> _languageSettings;
 
         #endregion
 
         #region Constructors and Injected
 
         /// <summary>
-        ///     Dependency injection of SettingsManager and retrieval of LanguageSettings.
+        ///     Dependency injection of the keyed language settings instance.
         /// </summary>
-        /// <param name="settingsManager">The settings manager containing language settings.</param>
+        /// <param name="languageSettings">The keyed settings instance for language configuration.</param>
         [Inject]
-        public void Construct(SettingsManager settingsManager)
+        public void Construct([Key(SettingsType.Language)] SettingsConfigureBase<string> languageSettings)
         {
-            _i2LanguageSettings = settingsManager.LanguageSettings as I2LanguageSettings;
+            _languageSettings = languageSettings;
         }
 
         #endregion
@@ -53,12 +51,12 @@ namespace Marmary.SettingsSystem.UnityComponents
         private void Start()
         {
             _combobox = GetComponent<ComboboxString>();
-            if (!_combobox || _i2LanguageSettings == null)
+            if (!_combobox || _languageSettings == null)
                 throw new Exception(
-                    "SetLanguageComboBox requires a ComboboxString component and LanguageSettings to be set.");
+                    "SetLanguageComboBox requires a ComboboxString component and a keyed language settings instance.");
 
-            var currentLanguage = _i2LanguageSettings.GetCurrentMemory();
-            var languages = _i2LanguageSettings.GetOptions();
+            var currentLanguage = _languageSettings.GetCurrentMemory();
+            var languages = _languageSettings.GetOptions();
 
             using (_combobox.ListView.DataSource.BeginUpdate())
             {
@@ -97,7 +95,7 @@ namespace Marmary.SettingsSystem.UnityComponents
             }
 
             var selectedLanguage = _combobox.ListView.DataSource[index];
-            _i2LanguageSettings.Set(selectedLanguage);
+            _languageSettings.Set(selectedLanguage);
         }
 
         #endregion
