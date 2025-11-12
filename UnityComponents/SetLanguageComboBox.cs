@@ -1,16 +1,16 @@
 ﻿using System;
 using Marmary.HellmenRaaun.Application.Global;
-using Marmary.HellmenRaaun.Application.Settings;
+using Marmary.SettingsSystem.UnitySettings;
 using UIWidgets;
 using UIWidgets.Extensions;
 using UnityEngine;
 using VContainer;
 
-namespace Marmary.Libraries.Settings
+namespace Marmary.SettingsSystem.UnityComponents
 {
     /// <summary>
     ///     Handles the initialization and value changes of the ComboboxString for language selection.
-    ///     Integrates with <see cref="LanguageSettings" /> to reflect and update the current language.
+    ///     Integrates with <see cref="I2LanguageSettings" /> to reflect and update the current language.
     /// </summary>
     [RequireComponent(typeof(ComboboxString))]
     public class SetLanguageComboBox : MonoBehaviour
@@ -25,9 +25,11 @@ namespace Marmary.Libraries.Settings
         /// <summary>
         ///     Reference to the LanguageSettings instance used to get and set the current language.
         /// </summary>
-        private LanguageSettings _languageSettings;
+        private I2LanguageSettings _i2LanguageSettings;
 
         #endregion
+
+        #region Constructors and Injected
 
         /// <summary>
         ///     Dependency injection of SettingsManager and retrieval of LanguageSettings.
@@ -36,8 +38,10 @@ namespace Marmary.Libraries.Settings
         [Inject]
         public void Construct(SettingsManager settingsManager)
         {
-            _languageSettings = settingsManager.LanguageSettings as LanguageSettings;
+            _i2LanguageSettings = settingsManager.LanguageSettings as I2LanguageSettings;
         }
+
+        #endregion
 
         #region Unity Event Functions
 
@@ -49,12 +53,12 @@ namespace Marmary.Libraries.Settings
         private void Start()
         {
             _combobox = GetComponent<ComboboxString>();
-            if (!_combobox || _languageSettings == null)
+            if (!_combobox || _i2LanguageSettings == null)
                 throw new Exception(
                     "SetLanguageComboBox requires a ComboboxString component and LanguageSettings to be set.");
 
-            var currentLanguage = _languageSettings.GetCurrent();
-            var languages = _languageSettings.GetOptions();
+            var currentLanguage = _i2LanguageSettings.GetCurrentMemory();
+            var languages = _i2LanguageSettings.GetOptions();
 
             using (_combobox.ListView.DataSource.BeginUpdate())
             {
@@ -93,7 +97,7 @@ namespace Marmary.Libraries.Settings
             }
 
             var selectedLanguage = _combobox.ListView.DataSource[index];
-            _languageSettings.Set(selectedLanguage);
+            _i2LanguageSettings.Set(selectedLanguage);
         }
 
         #endregion

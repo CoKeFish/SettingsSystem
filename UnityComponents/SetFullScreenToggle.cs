@@ -1,10 +1,10 @@
 using Marmary.HellmenRaaun.Application.Global;
-using Marmary.HellmenRaaun.Application.Settings;
+using Marmary.SettingsSystem.UnitySettings;
 using UnityEngine;
 using UnityEngine.UI;
 using VContainer;
 
-namespace Marmary.Libraries.Settings
+namespace Marmary.SettingsSystem.UnityComponents
 {
     /// <summary>
     ///     Handles the binding between a UI Toggle and the application's full screen setting.
@@ -26,6 +26,8 @@ namespace Marmary.Libraries.Settings
 
         #endregion
 
+        #region Constructors and Injected
+
         /// <summary>
         ///     Injects the <see cref="SettingsManager" /> dependency and retrieves the <see cref="FullScreenSettings" />.
         /// </summary>
@@ -35,6 +37,8 @@ namespace Marmary.Libraries.Settings
         {
             _fullScreenSettings = settingsManager.FullScreenSettings as FullScreenSettings;
         }
+
+        #endregion
 
         #region Unity Event Functions
 
@@ -46,7 +50,7 @@ namespace Marmary.Libraries.Settings
         {
             _toggle = GetComponent<Toggle>();
 
-            _toggle.isOn = _fullScreenSettings.GetCurrent();
+            _toggle.isOn = _fullScreenSettings.GetCurrentMemory();
 
             _toggle.onValueChanged.AddListener(OnValueChanged);
         }

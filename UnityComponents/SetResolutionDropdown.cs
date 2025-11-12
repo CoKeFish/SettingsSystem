@@ -5,7 +5,7 @@ using UnityEngine;
 
 //TODO: DOCUMENT THIS CLASS
 
-namespace Marmary.Libraries.Settings
+namespace Marmary.SettingsSystem.UnityComponents
 {
     [RequireComponent(typeof(TMP_Dropdown))]
     public class SetResolutionDropdown : MonoBehaviour

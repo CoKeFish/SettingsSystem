@@ -1,0 +1,17 @@
+{
+    "name": "Marmary.SettingsSystem",
+    "rootNamespace": "",
+    "references": [
+        "GUID:e938dcb4c8949a04db3466907023a9c2",
+        "GUID:571bcc04be91c314a8cf8b12e9b7372a"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

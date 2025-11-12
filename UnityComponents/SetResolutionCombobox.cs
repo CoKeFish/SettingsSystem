@@ -1,11 +1,11 @@
 ﻿using Marmary.HellmenRaaun.Application.Global;
-using Marmary.HellmenRaaun.Application.Settings;
+using Marmary.SettingsSystem.UnitySettings;
 using UIWidgets;
 using UIWidgets.Extensions;
 using UnityEngine;
 using VContainer;
 
-namespace Marmary.Libraries.Settings
+namespace Marmary.SettingsSystem.UnityComponents
 {
     /// <summary>
     ///     Handles the population and selection logic for a resolution combobox UI element.
@@ -28,6 +28,8 @@ namespace Marmary.Libraries.Settings
 
         #endregion
 
+        #region Constructors and Injected
+
         /// <summary>
         ///     Injects the <see cref="SettingsManager" /> dependency and retrieves the <see cref="ResolutionSettings" />.
         /// </summary>
@@ -37,6 +39,8 @@ namespace Marmary.Libraries.Settings
         {
             _resolutionSettings = settingsManager.ResolutionSettings as ResolutionSettings;
         }
+
+        #endregion
 
         #region Unity Event Functions
 
@@ -59,7 +63,7 @@ namespace Marmary.Libraries.Settings
 
             // Set the currently selected resolution
             _combobox.ListView.SelectedIndex =
-                resolutionOptions.IndexOf(_resolutionSettings.GetCurrentToString());
+                resolutionOptions.IndexOf(_resolutionSettings.GetCurrentMemoryToString());
 
             // Register event listener for selection changes
             _combobox.ListView.OnSelectObject.AddListener(OnValueChanged);

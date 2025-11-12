@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
-using Marmary.HellmenRaaun.Application.Save;
-using Marmary.HellmenRaaun.Core;
-using Marmary.HellmenRaaun.Domain;
+using Marmary.SaveSystem;
 using UnityEngine;
 
-namespace Marmary.HellmenRaaun.Application.Settings
+namespace Marmary.SettingsSystem.UnitySettings
 {
     /// <summary>
     ///     Manages the fullscreen display setting for the application.
@@ -12,15 +10,20 @@ namespace Marmary.HellmenRaaun.Application.Settings
     /// </summary>
     public sealed class FullScreenSettings : SettingsConfigureBase<bool>
     {
+        #region Constructors and Injected
+
         /// <summary>
         ///     Initializes a new instance of the <see cref="FullScreenSettings" /> class.
         ///     Sets the fullscreen state based on the saved settings.
         /// </summary>
         /// <param name="settingsRepository">The repository containing the settings data.</param>
-        public FullScreenSettings(SaveRepositoryGeneric<SettingsData> settingsRepository) : base(settingsRepository)
+        public FullScreenSettings(SaveRepositoryGeneric<bool> settingsRepository)
+            : base(settingsRepository, ResolveDefault(settingsRepository))
         {
-            Set(settingsRepository.Value.FullScreen);
+            Set(settingsRepository.Value);
         }
+
+        #endregion
 
         #region Methods
 
@@ -30,9 +33,9 @@ namespace Marmary.HellmenRaaun.Application.Settings
         /// <param name="value">If true, enables fullscreen; otherwise, disables it.</param>
         public override void Set(bool value)
         {
-            Screen.fullScreen = value;
-            SettingsRepository.Value.FullScreen = value;
-            SettingsRepository.SaveData();
+            var fullScreenToSet = value;
+            Screen.fullScreen = fullScreenToSet;
+            SettingsRepository.Value = fullScreenToSet;
         }
 
         /// <summary>
@@ -48,21 +51,46 @@ namespace Marmary.HellmenRaaun.Application.Settings
         }
 
         /// <summary>
-        ///     Gets the current fullscreen state.
+        ///     Retrieves the current fullscreen state of the system.
+        ///     Returns whether the application is currently running in fullscreen mode.
         /// </summary>
-        /// <returns>True if fullscreen is enabled; otherwise, false.</returns>
-        public override bool GetCurrent()
+        /// <returns>A boolean value where true indicates fullscreen mode is enabled, and false indicates it is disabled.</returns>
+        public override bool GetCurrentSystem()
         {
-            return SettingsRepository.Value.FullScreen;
+            return Screen.fullScreen;
         }
 
         /// <summary>
-        ///     Gets the current fullscreen state as a string.
+        ///     Retrieves the current memory value from the settings repository.
         /// </summary>
-        /// <returns>"True" if fullscreen is enabled; otherwise, "False".</returns>
-        public override string GetCurrentToString()
+        /// <returns>
+        ///     The current memory value.
+        /// </returns>
+        public override bool GetCurrentMemory()
         {
-            return GetCurrent().ToString();
+            return SettingsRepository.Value;
+        }
+
+        /// <summary>
+        ///     Converts the current system setting value to its string representation.
+        /// </summary>
+        /// <returns>
+        ///     A string representation of the current system setting value.
+        /// </returns>
+        public override string GetCurrentSystenToString()
+        {
+            return GetCurrentSystem().ToString();
+        }
+
+        /// <summary>
+        ///     Retrieves the current memory value as a string representation.
+        /// </summary>
+        /// <returns>
+        ///     A string representation of the current memory value.
+        /// </returns>
+        public override string GetCurrentMemoryToString()
+        {
+            return GetCurrentMemory().ToString();
         }
 
         /// <summary>
@@ -89,6 +117,17 @@ namespace Marmary.HellmenRaaun.Application.Settings
                 "True",
                 "False"
             };
+        }
+
+
+        /// <summary>
+        ///     Resolves the default value for the fullscreen setting based on the saved repository data.
+        /// </summary>
+        /// <param name="repository">The repository containing the settings data.</param>
+        /// <returns>The default fullscreen state as a boolean value.</returns>
+        private static bool ResolveDefault(SaveRepositoryGeneric<bool> repository)
+        {
+            return repository.Value;
         }
 
         #endregion

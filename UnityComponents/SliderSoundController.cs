@@ -1,62 +1,65 @@
 ﻿using Marmary.HellmenRaaun.Application.Global;
-using Marmary.HellmenRaaun.Application.Settings;
+using Marmary.SettingsSystem.UnitySettings;
 using UnityEngine;
 using UnityEngine.UI;
 using VContainer;
 
-namespace Marmary.Libraries.Settings
+namespace Marmary.SettingsSystem.UnityComponents
 {
-    
     //TODO: Rename to SetMusicVolumeSlider
-    
+
     /// <summary>
-    /// Controls a UI slider to adjust the application's music volume.
-    /// Binds the slider value to the music volume setting and updates the setting when the slider changes.
+    ///     Controls a UI slider to adjust the application's music volume.
+    ///     Binds the slider value to the music volume setting and updates the setting when the slider changes.
     /// </summary>
     public class SliderSoundController : MonoBehaviour
     {
-        /// <summary>
-        /// Reference to the music volume settings manager.
-        /// </summary>
-        private MusicVolumeSettings _musicVolumeSettings;
+        #region Fields
 
         /// <summary>
-        /// Injects the <see cref="SettingsManager"/> dependency and retrieves the <see cref="MusicVolumeSettings"/>.
+        ///     Reference to the music volume settings manager.
+        /// </summary>
+        private FMODVolumeSettings _fmodVolumeSettings;
+
+        /// <summary>
+        ///     Reference to the UI Slider component.
+        /// </summary>
+        private Slider _slider;
+
+        #endregion
+
+        #region Constructors and Injected
+
+        /// <summary>
+        ///     Injects the <see cref="SettingsManager" /> dependency and retrieves the <see cref="FMODVolumeSettings" />.
         /// </summary>
         /// <param name="settingsManager">The settings manager containing music volume settings.</param>
         [Inject]
         private void Construct(SettingsManager settingsManager)
         {
-            _musicVolumeSettings = settingsManager.MusicVolumeSettings as MusicVolumeSettings;
+            _fmodVolumeSettings = settingsManager.MusicVolumeSettings as FMODVolumeSettings;
         }
-
-        #region Fields
-
-        /// <summary>
-        /// Reference to the UI Slider component.
-        /// </summary>
-        private Slider _slider;
 
         #endregion
 
         #region Unity Event Functions
 
         /// <summary>
-        /// Unity event function called on script initialization.
-        /// Initializes the slider reference, sets the initial slider value, and subscribes to value changes.
+        ///     Unity event function called on script initialization.
+        ///     Initializes the slider reference, sets the initial slider value, and subscribes to value changes.
         /// </summary>
         private void Start()
         {
             _slider = GetComponent<Slider>();
 
-            _slider.value = _musicVolumeSettings.GetCurrent();
+            _slider.value = _fmodVolumeSettings.GetCurrentMemory();
 
             _slider.onValueChanged.AddListener(OnValueChanged);
         }
 
         /// <summary>
-        /// Unity event function called when the object is destroyed.
-        /// Unsubscribes from the slider value changed event.
+        ///     Unity event function called when the object is destroyed.
+        ///     Unsubscribes from the slider value changed event.
         /// </summary>
         private void OnDestroy()
         {
@@ -68,13 +71,13 @@ namespace Marmary.Libraries.Settings
         #region Event Functions
 
         /// <summary>
-        /// Event handler called when the slider value changes.
-        /// Updates the music volume setting accordingly.
+        ///     Event handler called when the slider value changes.
+        ///     Updates the music volume setting accordingly.
         /// </summary>
         /// <param name="value">The new value of the slider.</param>
         private void OnValueChanged(float value)
         {
-            _musicVolumeSettings.Set(value);
+            _fmodVolumeSettings.Set(value);
         }
 
         #endregion

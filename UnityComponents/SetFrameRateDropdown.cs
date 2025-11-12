@@ -4,7 +4,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 
-namespace Marmary.Libraries.Settings
+namespace Marmary.SettingsSystem.UnityComponents
 {
     // TODO: Refactor this class to use a settings repository for persistence
     // TODO: DOCUMENT THIS CLASS
@@ -90,7 +90,7 @@ namespace Marmary.Libraries.Settings
                 dropdown.value = index;
             }
 
-            UnityEngine.Application.targetFrameRate = (int)Math.Round(_refreshRates[index].value);
+            Application.targetFrameRate = (int)Math.Round(_refreshRates[index].value);
         }
 
         #endregion

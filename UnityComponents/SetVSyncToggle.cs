@@ -1,10 +1,10 @@
 using Marmary.HellmenRaaun.Application.Global;
-using Marmary.HellmenRaaun.Application.Settings;
+using Marmary.SettingsSystem.UnitySettings;
 using UnityEngine;
 using UnityEngine.UI;
 using VContainer;
 
-namespace Marmary.Libraries.Settings
+namespace Marmary.SettingsSystem.UnityComponents
 {
     /// <summary>
     ///     Handles the binding between a UI Toggle and the application's VSync setting.
@@ -26,6 +26,8 @@ namespace Marmary.Libraries.Settings
 
         #endregion
 
+        #region Constructors and Injected
+
         /// <summary>
         ///     Injects the <see cref="VSyncSettings" /> dependency.
         /// </summary>
@@ -36,6 +38,8 @@ namespace Marmary.Libraries.Settings
             _vSyncSettings = settingsManager.VSyncSettings as VSyncSettings;
         }
 
+        #endregion
+
         #region Unity Event Functions
 
         /// <summary>
@@ -45,7 +49,7 @@ namespace Marmary.Libraries.Settings
         private void Start()
         {
             _toggle = GetComponent<Toggle>();
-            _toggle.isOn = _vSyncSettings.GetCurrent();
+            _toggle.isOn = _vSyncSettings.GetCurrentMemory();
             _toggle.onValueChanged.AddListener(OnValueChanged);
         }
 

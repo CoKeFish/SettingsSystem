@@ -1,15 +1,15 @@
 using Marmary.HellmenRaaun.Application.Global;
-using Marmary.HellmenRaaun.Application.Settings;
+using Marmary.SettingsSystem.UnitySettings;
 using TMPro;
 using UnityEngine;
 using VContainer;
 
 // TODO: Refactor this to use SettingsManager
-namespace Marmary.Libraries.Settings
+namespace Marmary.SettingsSystem.UnityComponents
 {
     /// <summary>
     ///     Handles the initialization and value changes of a TMP_Dropdown for language selection.
-    ///     Integrates with <see cref="LanguageSettings" /> to update and reflect the current language.
+    ///     Integrates with <see cref="I2LanguageSettings" /> to update and reflect the current language.
     /// </summary>
     public class SetLanguageDropdownTMP : MonoBehaviour
     {
@@ -18,20 +18,24 @@ namespace Marmary.Libraries.Settings
         /// <summary>
         ///     Reference to the language settings manager.
         /// </summary>
-        private LanguageSettings _languageSettings;
+        private I2LanguageSettings _i2LanguageSettings;
 
         #endregion
 
+        #region Constructors and Injected
+
         /// <summary>
-        ///     Injects the <see cref="SettingsManager" /> dependency and retrieves the <see cref="LanguageSettings" />.
+        ///     Injects the <see cref="SettingsManager" /> dependency and retrieves the <see cref="I2LanguageSettings" />.
         /// </summary>
         /// <param name="settingsManager">The settings manager containing language settings.</param>
         [Inject]
         public void Construct(SettingsManager settingsManager)
         {
             // Constructor injection for SettingsManager
-            _languageSettings = settingsManager.LanguageSettings as LanguageSettings;
+            _i2LanguageSettings = settingsManager.LanguageSettings as I2LanguageSettings;
         }
+
+        #endregion
 
         #region Unity Event Functions
 
@@ -45,8 +49,8 @@ namespace Marmary.Libraries.Settings
             if (dropdown == null)
                 return;
 
-            var currentLanguage = _languageSettings.GetCurrent();
-            var languages = _languageSettings.GetOptions();
+            var currentLanguage = _i2LanguageSettings.GetCurrentMemory();
+            var languages = _i2LanguageSettings.GetOptions();
 
             // Fill the dropdown elements
             dropdown.ClearOptions();
@@ -63,7 +67,7 @@ namespace Marmary.Libraries.Settings
 
         /// <summary>
         ///     Event handler for when the dropdown value changes.
-        ///     Updates the current language in <see cref="LanguageSettings" />.
+        ///     Updates the current language in <see cref="I2LanguageSettings" />.
         /// </summary>
         /// <param name="index">The selected index in the dropdown.</param>
         private void OnValueChanged(int index)
@@ -75,7 +79,7 @@ namespace Marmary.Libraries.Settings
                 dropdown.value = index;
             }
 
-            _languageSettings.Set(dropdown.options[index].text);
+            _i2LanguageSettings.Set(dropdown.options[index].text);
         }
 
         #endregion

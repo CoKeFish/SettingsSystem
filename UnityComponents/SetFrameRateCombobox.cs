@@ -1,11 +1,11 @@
 ﻿using Marmary.HellmenRaaun.Application.Global;
-using Marmary.HellmenRaaun.Application.Settings;
+using Marmary.SettingsSystem.UnitySettings;
 using UIWidgets;
 using UIWidgets.Extensions;
 using UnityEngine;
 using VContainer;
 
-namespace Marmary.Libraries.Settings
+namespace Marmary.SettingsSystem.UnityComponents
 {
     /// <summary>
     ///     Component that manages a combobox UI element for selecting the application's frame rate.
@@ -28,6 +28,8 @@ namespace Marmary.Libraries.Settings
 
         #endregion
 
+        #region Constructors and Injected
+
         /// <summary>
         ///     Injects the <see cref="SettingsManager" /> dependency and retrieves the <see cref="FrameRateSettings" />.
         /// </summary>
@@ -37,6 +39,8 @@ namespace Marmary.Libraries.Settings
         {
             _frameRateSettings = settingsManager.FrameRateSettings as FrameRateSettings;
         }
+
+        #endregion
 
         #region Unity Event Functions
 
@@ -60,7 +64,7 @@ namespace Marmary.Libraries.Settings
 
             // Set the selected index to match the current screen refresh rate
             _combobox.ListView.SelectedIndex =
-                resolutionOptions.IndexOf(_frameRateSettings.GetCurrentToString());
+                resolutionOptions.IndexOf(_frameRateSettings.GetCurrentMemoryToString());
             _combobox.ListView.OnSelectObject.AddListener(OnValueChanged);
         }
 

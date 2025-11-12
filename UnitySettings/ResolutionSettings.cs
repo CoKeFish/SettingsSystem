@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Marmary.HellmenRaaun.Application.Save;
-using Marmary.HellmenRaaun.Core;
-using Marmary.HellmenRaaun.Domain;
+using Marmary.SaveSystem;
 using UnityEngine;
 
-namespace Marmary.HellmenRaaun.Application.Settings
+namespace Marmary.SettingsSystem.UnitySettings
 {
     /// <summary>
     ///     Manages screen resolution settings, providing available options and applying user selections.
@@ -22,19 +20,31 @@ namespace Marmary.HellmenRaaun.Application.Settings
 
         #endregion
 
+        #region Constructors and Injected
+
         /// <summary>
         ///     Initializes a new instance of the <see cref="ResolutionSettings" /> class.
         ///     Detects available resolutions and sets the current resolution based on saved settings.
         /// </summary>
         /// <param name="settingsRepository">Repository for saving and loading settings data.</param>
-        public ResolutionSettings(SaveRepositoryGeneric<SettingsData> settingsRepository) : base(settingsRepository)
+        public ResolutionSettings(SaveRepositoryGeneric<Vector2Int> settingsRepository)
+            : base(settingsRepository, ResolveDefault(settingsRepository))
         {
             _resolutionOptions = DetectAvailableResolutions();
+            if (_resolutionOptions.Count == 0)
+            {
+                var current = Screen.currentResolution;
+                _resolutionOptions.Add(new Vector2Int(current.width, current.height));
+            }
+
             // If the saved value is not valid, initialize with the first available.
-            Set(!_resolutionOptions.Contains(settingsRepository.Value.Resolution)
-                ? _resolutionOptions[0]
-                : settingsRepository.Value.Resolution);
+            var savedValue = settingsRepository.Value;
+            if (!_resolutionOptions.Contains(savedValue)) savedValue = _resolutionOptions[0];
+
+            Set(savedValue);
         }
+
+        #endregion
 
         #region Methods
 
@@ -45,8 +55,7 @@ namespace Marmary.HellmenRaaun.Application.Settings
         public override void Set(Vector2Int value)
         {
             Screen.SetResolution(value.x, value.y, Screen.fullScreen);
-            SettingsRepository.Value.Resolution = value;
-            SettingsRepository.SaveData();
+            SettingsRepository.Value = value;
         }
 
         /// <summary>
@@ -66,19 +75,37 @@ namespace Marmary.HellmenRaaun.Application.Settings
         ///     Gets the current screen resolution.
         /// </summary>
         /// <returns>Current resolution as <see cref="Vector2Int" />.</returns>
-        public override Vector2Int GetCurrent()
+        public override Vector2Int GetCurrentSystem()
         {
             return new Vector2Int(Screen.width, Screen.height);
+        }
+
+        /// <summary>
+        ///     Retrieves the current memory value stored in the settings repository.
+        /// </summary>
+        /// <returns>The current value of type <see cref="Vector2Int" /> from the settings repository.</returns>
+        public override Vector2Int GetCurrentMemory()
+        {
+            return SettingsRepository.Value;
         }
 
         /// <summary>
         ///     Gets the current screen resolution as a formatted string.
         /// </summary>
         /// <returns>Current resolution in the format "width X height".</returns>
-        public override string GetCurrentToString()
+        public override string GetCurrentSystenToString()
         {
-            var currentResolution = GetCurrent();
-            return Parse(currentResolution);
+            return Parse(GetCurrentSystem());
+        }
+
+        /// <summary>
+        ///     Retrieves the current memory setting as a string representation.
+        ///     Converts the current configuration value into a readable string format.
+        /// </summary>
+        /// <returns>The string representation of the current memory setting.</returns>
+        public override string GetCurrentMemoryToString()
+        {
+            return Parse(GetCurrentMemory());
         }
 
         /// <summary>
@@ -87,7 +114,7 @@ namespace Marmary.HellmenRaaun.Application.Settings
         /// <returns>List of available resolutions as <see cref="Vector2Int" />.</returns>
         public override List<Vector2Int> GetOptions()
         {
-            return _resolutionOptions;
+            return new List<Vector2Int>(_resolutionOptions);
         }
 
         /// <summary>
@@ -122,6 +149,24 @@ namespace Marmary.HellmenRaaun.Application.Settings
             }
 
             return false;
+        }
+
+        /// <summary>
+        ///     Determines the default screen resolution to be applied based on the available options
+        ///     and the saved repository value.
+        /// </summary>
+        /// <param name="repository">The repository containing the saved resolution data.</param>
+        /// <returns>A <see cref="Vector2Int" /> representing the default resolution to be used.</returns>
+        private static Vector2Int ResolveDefault(SaveRepositoryGeneric<Vector2Int> repository)
+        {
+            var options = DetectAvailableResolutions();
+            if (options.Count == 0)
+            {
+                var current = Screen.currentResolution;
+                return new Vector2Int(current.width, current.height);
+            }
+
+            return options.Contains(repository.Value) ? repository.Value : options[0];
         }
 
         /// <summary>
