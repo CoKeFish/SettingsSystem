@@ -10,7 +10,7 @@ namespace Marmary.SettingsSystem.UnitySettings
     ///     Manages dynamic frame rate settings based on available hardware options.
     ///     Detects supported frame rates and allows setting and retrieving the current frame rate.
     /// </summary>
-    internal class FrameRateSettings : SettingsConfigureBase<int>
+    public class FrameRateSettings : SettingsConfigureBase<int>
     {
         #region Fields
 

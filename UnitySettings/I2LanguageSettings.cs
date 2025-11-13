@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using I2.Loc;
 using Marmary.SaveSystem;
 
-//TODO: USE THE I2 MACRO 
 namespace Marmary.SettingsSystem.UnitySettings
 {
     /// <summary>
     ///     Manages language settings, including available languages and current selection.
     /// </summary>
-    internal class I2LanguageSettings : SettingsConfigureBase<string>
+    public class I2LanguageSettings : SettingsConfigureBase<string>
     {
         #region Fields
 
