@@ -60,7 +60,7 @@ namespace Marmary.SettingsSystem.UnitySettings
             var clampedValue = Mathf.Clamp01(value);
             if (_musicBus.isValid()) _musicBus.setVolume(clampedValue);
 
-            SettingsRepository.Value = clampedValue;
+            settingsRepository.Value = clampedValue;
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace Marmary.SettingsSystem.UnitySettings
         {
             if (_musicBus.isValid() && _musicBus.getVolume(out var volume) == RESULT.OK) return volume;
 
-            return SettingsRepository.Value;
+            return settingsRepository.Value;
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace Marmary.SettingsSystem.UnitySettings
         /// </returns>
         public override float GetCurrentMemory()
         {
-            return SettingsRepository.Value;
+            return settingsRepository.Value;
         }
 
         /// <summary>

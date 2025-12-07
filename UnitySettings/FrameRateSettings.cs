@@ -51,7 +51,7 @@ namespace Marmary.SettingsSystem.UnitySettings
         {
             var frameRateToSet = _frameRateOptions.Contains(value) ? value : _frameRateOptions.First();
             Application.targetFrameRate = frameRateToSet;
-            SettingsRepository.Value = frameRateToSet;
+            settingsRepository.Value = frameRateToSet;
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace Marmary.SettingsSystem.UnitySettings
         /// </returns>
         public override int GetCurrentMemory()
         {
-            return SettingsRepository.Value;
+            return settingsRepository.Value;
         }
 
         /// <summary>

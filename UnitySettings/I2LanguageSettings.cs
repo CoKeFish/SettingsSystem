@@ -49,12 +49,12 @@ namespace Marmary.SettingsSystem.UnitySettings
             if (_languages.Contains(value))
             {
                 LocalizationManager.CurrentLanguage = value;
-                SettingsRepository.Value = value;
+                settingsRepository.Value = value;
             }
             else
             {
                 LocalizationManager.CurrentLanguage = LocalizationManager.GetCurrentDeviceLanguage();
-                SettingsRepository.Value = LocalizationManager.GetCurrentDeviceLanguage();
+                settingsRepository.Value = LocalizationManager.GetCurrentDeviceLanguage();
             }
         }
 
@@ -76,7 +76,7 @@ namespace Marmary.SettingsSystem.UnitySettings
         /// <returns>The current memory value as a string.</returns>
         public override string GetCurrentMemory()
         {
-            return SettingsRepository.Value;
+            return settingsRepository.Value;
         }
 
         /// <summary>

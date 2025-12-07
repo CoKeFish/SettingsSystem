@@ -55,7 +55,7 @@ namespace Marmary.SettingsSystem.UnitySettings
         public override void Set(Vector2Int value)
         {
             Screen.SetResolution(value.x, value.y, Screen.fullScreen);
-            SettingsRepository.Value = value;
+            settingsRepository.Value = value;
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace Marmary.SettingsSystem.UnitySettings
         /// <returns>The current value of type <see cref="Vector2Int" /> from the settings repository.</returns>
         public override Vector2Int GetCurrentMemory()
         {
-            return SettingsRepository.Value;
+            return settingsRepository.Value;
         }
 
         /// <summary>

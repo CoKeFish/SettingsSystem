@@ -35,7 +35,7 @@ namespace Marmary.SettingsSystem.UnitySettings
         {
             var fullScreenToSet = value;
             Screen.fullScreen = fullScreenToSet;
-            SettingsRepository.Value = fullScreenToSet;
+            settingsRepository.Value = fullScreenToSet;
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace Marmary.SettingsSystem.UnitySettings
         /// </returns>
         public override bool GetCurrentMemory()
         {
-            return SettingsRepository.Value;
+            return settingsRepository.Value;
         }
 
         /// <summary>

@@ -8,14 +8,14 @@ namespace Marmary.SettingsSystem
     ///     Provides a contract for setting, retrieving, and listing available options for a setting.
     /// </summary>
     /// <typeparam name="T">The type of the setting value.</typeparam>
-    public abstract class SettingsConfigureBase<T>
+    public abstract class SettingsConfigureBase<T> : ISave
     {
         #region Fields
 
         /// <summary>
         ///     The global save context used for persisting and retrieving settings.
         /// </summary>
-        protected readonly SaveRepositoryGeneric<T> SettingsRepository;
+        protected readonly SaveRepositoryGeneric<T> settingsRepository;
 
         /// <summary>
         ///     The default value for the setting, used to initialize or reset the configuration
@@ -33,7 +33,7 @@ namespace Marmary.SettingsSystem
         /// <typeparam name="T">The type of the setting to configure.</typeparam>
         protected SettingsConfigureBase(SaveRepositoryGeneric<T> settingsRepository, T defaultValue)
         {
-            SettingsRepository = settingsRepository;
+            this.settingsRepository = settingsRepository;
             _defaultValue = defaultValue;
         }
 
@@ -131,9 +131,9 @@ namespace Marmary.SettingsSystem
         /// <summary>
         ///     Persists the current configuration state of the setting to the save repository.
         /// </summary>
-        private void Save()
+        public void Save()
         {
-            SettingsRepository.SaveData();
+            settingsRepository.SaveData();
         }
 
         #endregion

@@ -1,4 +1,5 @@
 ﻿using System;
+using Marmary.Utils.Runtime;
 using UIWidgets;
 using UIWidgets.Extensions;
 using UnityEngine;
@@ -48,6 +49,7 @@ namespace Marmary.SettingsSystem.UnityComponents
         ///     Initializes the ComboBox with available languages and sets the current selection.
         ///     Registers the value change event handler.
         /// </summary>
+        [IgnoreUnityLifecycle]
         private void Start()
         {
             _combobox = GetComponent<ComboboxString>();

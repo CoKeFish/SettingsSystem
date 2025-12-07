@@ -35,7 +35,7 @@ namespace Marmary.SettingsSystem.UnitySettings
         public override void Set(bool value)
         {
             QualitySettings.vSyncCount = value ? 1 : 0;
-            SettingsRepository.Value = value;
+            settingsRepository.Value = value;
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace Marmary.SettingsSystem.UnitySettings
         /// <returns>The current value of VSync stored in memory.</returns>
         public override bool GetCurrentMemory()
         {
-            return SettingsRepository.Value;
+            return settingsRepository.Value;
         }
 
         /// <summary>
