@@ -1,3 +1,4 @@
+using Marmary.Utils.Runtime;
 using UnityEngine;
 using UnityEngine.UI;
 using VContainer;
@@ -44,6 +45,7 @@ namespace Marmary.SettingsSystem.UnityComponents
         ///     Unity event function called on script initialization.
         ///     Initializes the toggle reference, sets the initial full screen state, and subscribes to toggle changes.
         /// </summary>
+        [IgnoreUnityLifecycle]
         private void Start()
         {
             _toggle = GetComponent<Toggle>();

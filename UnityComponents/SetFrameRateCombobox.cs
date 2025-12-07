@@ -1,4 +1,5 @@
-﻿using UIWidgets;
+﻿using Marmary.Utils.Runtime;
+using UIWidgets;
 using UIWidgets.Extensions;
 using UnityEngine;
 using VContainer;
@@ -45,6 +46,7 @@ namespace Marmary.SettingsSystem.UnityComponents
         /// <summary>
         ///     Unity Start event. Initializes the combobox with frame rate options and sets up event listeners.
         /// </summary>
+        [IgnoreUnityLifecycle]
         private void Start()
         {
             _combobox = GetComponent<ComboboxString>();

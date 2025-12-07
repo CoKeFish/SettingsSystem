@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Marmary.Utils.Runtime;
+using UnityEngine;
 using UnityEngine.UI;
 using VContainer;
 
@@ -45,6 +46,7 @@ namespace Marmary.SettingsSystem.UnityComponents
         ///     Unity event function called on script initialization.
         ///     Initializes the slider reference, sets the initial slider value, and subscribes to value changes.
         /// </summary>
+        [IgnoreUnityLifecycle]
         private void Start()
         {
             _slider = GetComponent<Slider>();
