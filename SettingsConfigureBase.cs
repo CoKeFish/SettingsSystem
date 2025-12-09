@@ -8,7 +8,7 @@ namespace Marmary.SettingsSystem
     ///     Provides a contract for setting, retrieving, and listing available options for a setting.
     /// </summary>
     /// <typeparam name="T">The type of the setting value.</typeparam>
-    public abstract class SettingsConfigureBase<T> : ISave
+    public abstract class SettingsConfigureBase<T> : IAutoSave
     {
         #region Fields
 
@@ -137,5 +137,14 @@ namespace Marmary.SettingsSystem
         }
 
         #endregion
+
+        /// <summary>
+        /// Saves the current state of the settings to the repository.
+        /// Implements the <see cref="IAutoSave"/> interface method to ensure automatic persistence of configuration changes.
+        /// </summary>
+        public void AutoSave()
+        {
+            Save();
+        }
     }
 }
