@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using DTT.ExtendedDebugLogs;
 using Marmary.SaveSystem;
 using UnityEngine;
 
@@ -36,6 +37,7 @@ namespace Marmary.SettingsSystem.UnitySettings
             var fullScreenToSet = value;
             Screen.fullScreen = fullScreenToSet;
             settingsRepository.Value = fullScreenToSet;
+            DebugEx.Log($"Fullscreen changed to {fullScreenToSet}", SettingTag.Screen);
         }
 
         /// <summary>
@@ -47,7 +49,7 @@ namespace Marmary.SettingsSystem.UnitySettings
             if (bool.TryParse(value, out var result))
                 Set(result);
             else
-                Debug.LogError($"Invalid value for FullScreenSettings: {value}");
+                DebugEx.LogError($"Invalid value for FullScreenSettings: {value}", SettingTag.Screen);
         }
 
         /// <summary>

@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using DTT.ExtendedDebugLogs;
 using Marmary.SaveSystem;
 using UnityEngine;
 
@@ -52,6 +53,7 @@ namespace Marmary.SettingsSystem.UnitySettings
             var frameRateToSet = _frameRateOptions.Contains(value) ? value : _frameRateOptions.First();
             Application.targetFrameRate = frameRateToSet;
             settingsRepository.Value = frameRateToSet;
+            DebugEx.Log($"Frame rate changed to {frameRateToSet} FPS", SettingTag.Render);
         }
 
         /// <summary>
@@ -64,7 +66,7 @@ namespace Marmary.SettingsSystem.UnitySettings
             if (int.TryParse(value, out var frameRate))
                 Set(frameRate);
             else
-                Debug.LogError("Invalid frame rate value, ignoring.");
+                DebugEx.LogError("Invalid frame rate value, ignoring.", SettingTag.Render);
         }
 
         /// <summary>

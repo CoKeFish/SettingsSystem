@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
+using DTT.ExtendedDebugLogs;
 using Marmary.SaveSystem;
 using UnityEngine;
 
@@ -56,6 +57,7 @@ namespace Marmary.SettingsSystem.UnitySettings
         {
             Screen.SetResolution(value.x, value.y, Screen.fullScreen);
             settingsRepository.Value = value;
+            DebugEx.Log($"Resolution changed to {value.x} x {value.y}", SettingTag.Screen);
         }
 
         /// <summary>
@@ -68,7 +70,7 @@ namespace Marmary.SettingsSystem.UnitySettings
             if (TryParse(value, out var resolution))
                 Set(resolution);
             else
-                Debug.LogError("Invalid resolution format. Expected 'width X height'.");
+                DebugEx.LogError("Invalid resolution format. Expected 'width X height'.", SettingTag.Screen);
         }
 
         /// <summary>

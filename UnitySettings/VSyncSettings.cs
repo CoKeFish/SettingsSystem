@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using DTT.ExtendedDebugLogs;
 using Marmary.SaveSystem;
 using UnityEngine;
 
@@ -36,6 +37,7 @@ namespace Marmary.SettingsSystem.UnitySettings
         {
             QualitySettings.vSyncCount = value ? 1 : 0;
             settingsRepository.Value = value;
+            DebugEx.Log($"VSync changed to {value}", SettingTag.Render);
         }
 
         /// <summary>
@@ -48,7 +50,7 @@ namespace Marmary.SettingsSystem.UnitySettings
             if (bool.TryParse(value, out var result))
                 Set(result);
             else
-                Debug.LogError($"Invalid value for VSyncSettings: {value}");
+                DebugEx.LogError($"Invalid value for VSyncSettings: {value}", SettingTag.Render);
         }
 
         /// <summary>

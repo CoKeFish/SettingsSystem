@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using DTT.ExtendedDebugLogs;
 using FMOD;
 using FMOD.Studio;
 using FMODUnity;
@@ -61,6 +62,7 @@ namespace Marmary.SettingsSystem.UnitySettings
             if (_musicBus.isValid()) _musicBus.setVolume(clampedValue);
 
             settingsRepository.Value = clampedValue;
+            DebugEx.Log($"Volume changed to {clampedValue:F2}", SettingTag.Audio);
         }
 
         /// <summary>
@@ -73,7 +75,7 @@ namespace Marmary.SettingsSystem.UnitySettings
             if (float.TryParse(value, out var result))
                 Set(result);
             else
-                Debug.LogError($"Invalid value for MusicVolumeSettings: {value}");
+                DebugEx.LogError($"Invalid value for MusicVolumeSettings: {value}", SettingTag.Audio);
         }
 
         /// <summary>
