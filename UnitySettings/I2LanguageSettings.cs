@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using DTT.ExtendedDebugLogs;
 using I2.Loc;
 using Marmary.SaveSystem;
 
@@ -56,6 +57,7 @@ namespace Marmary.SettingsSystem.UnitySettings
                 LocalizationManager.CurrentLanguage = LocalizationManager.GetCurrentDeviceLanguage();
                 settingsRepository.Value = LocalizationManager.GetCurrentDeviceLanguage();
             }
+            DebugEx.Log($"Language changed to {LocalizationManager.CurrentLanguage}", SettingTag.Render);
         }
 
         /// <inheritdoc />
