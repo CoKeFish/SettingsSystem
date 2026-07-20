@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using Marmary.SaveSystem;
+﻿using Marmary.SaveSystem;
 
 namespace Marmary.SettingsSystem
 {
     /// <summary>
     ///     Abstract base class for configuring a specific type of application setting.
-    ///     Provides a contract for setting, retrieving, and listing available options for a setting.
+    ///     Provides a contract for setting, retrieving, and persisting a setting value.
     /// </summary>
     /// <typeparam name="T">The type of the setting value.</typeparam>
     public abstract class SettingsConfigureBase<T> : IAutoSave
@@ -15,11 +14,11 @@ namespace Marmary.SettingsSystem
         /// <summary>
         ///     The global save context used for persisting and retrieving settings.
         /// </summary>
-        protected readonly SaveRepositoryGeneric<T> settingsRepository;
+        protected readonly SaveRepository<T> settingsRepository;
 
         /// <summary>
-        ///     The default value for the setting, used to initialize or reset the configuration
-        ///     when no specific value has been provided by the user.
+        ///     The factory default value for the setting, used to reset the configuration
+        ///     to its out-of-the-box state.
         /// </summary>
         private readonly T _defaultValue;
 
@@ -30,8 +29,9 @@ namespace Marmary.SettingsSystem
         /// <summary>
         ///     Provides a base implementation for configuring application settings with a specific type.
         /// </summary>
-        /// <typeparam name="T">The type of the setting to configure.</typeparam>
-        protected SettingsConfigureBase(SaveRepositoryGeneric<T> settingsRepository, T defaultValue)
+        /// <param name="settingsRepository">Repository for saving and loading the setting value.</param>
+        /// <param name="defaultValue">The factory default value the setting resets to.</param>
+        protected SettingsConfigureBase(SaveRepository<T> settingsRepository, T defaultValue)
         {
             this.settingsRepository = settingsRepository;
             _defaultValue = defaultValue;
@@ -85,33 +85,26 @@ namespace Marmary.SettingsSystem
         /// <returns>The current memory-stored value of the setting.</returns>
         public abstract T GetCurrentMemory();
 
-
         /// <summary>
         ///     Retrieves the current system setting value as a string representation.
         /// </summary>
         /// <returns>A string representation of the current system setting value.</returns>
-        public abstract string GetCurrentSystenToString();
+        public virtual string GetCurrentSystemToString()
+        {
+            return GetCurrentSystem().ToString();
+        }
 
         /// <summary>
         ///     Retrieves the current in-memory value of the setting as a string representation.
         /// </summary>
         /// <returns>A string representation of the current in-memory value of the setting.</returns>
-        public abstract string GetCurrentMemoryToString();
+        public virtual string GetCurrentMemoryToString()
+        {
+            return GetCurrentMemory().ToString();
+        }
 
         /// <summary>
-        ///     Gets the list of available options for the setting.
-        /// </summary>
-        /// <returns>A list of available options of type <typeparamref name="T" />.</returns>
-        public abstract List<T> GetOptions();
-
-        /// <summary>
-        ///     Gets the list of available options for the setting as strings.
-        /// </summary>
-        /// <returns>A list of available options as strings.</returns>
-        public abstract List<string> GetOptionsToString();
-
-        /// <summary>
-        ///     Resets the setting to its default value and persists the change to the save repository.
+        ///     Resets the setting to its factory default value and persists the change to the save repository.
         /// </summary>
         public void ResetAndSave()
         {
@@ -121,7 +114,7 @@ namespace Marmary.SettingsSystem
 
 
         /// <summary>
-        ///     Resets the setting to its default value.
+        ///     Resets the setting to its factory default value.
         /// </summary>
         private void Reset()
         {
@@ -133,7 +126,7 @@ namespace Marmary.SettingsSystem
         /// </summary>
         public void Save()
         {
-            settingsRepository.SaveData();
+            settingsRepository.Save();
         }
 
         #endregion

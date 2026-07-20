@@ -1,5 +1,5 @@
+#if FMOD_MODULE_ENABLED
 using System;
-using System.Collections.Generic;
 using DTT.ExtendedDebugLogs;
 using FMOD;
 using FMOD.Studio;
@@ -30,12 +30,13 @@ namespace Marmary.SettingsSystem.UnitySettings
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="FMODVolumeSettings" /> class.
-        ///     Sets the initial music volume from the settings repository.
+        ///     Applies the volume loaded from the settings repository to the FMOD bus.
         /// </summary>
         /// <param name="settingsRepository">The repository containing settings data.</param>
-        /// <param name="busName">The name of the FMOD bus for music.</param>
-        public FMODVolumeSettings(SaveRepositoryGeneric<float> settingsRepository, string busName) : base(
-            settingsRepository, ResolveDefault(settingsRepository))
+        /// <param name="defaultValue">The factory default volume the setting resets to.</param>
+        /// <param name="busName">The name of the FMOD bus to control (e.g. "bus:/" for master).</param>
+        public FMODVolumeSettings(SaveRepository<float> settingsRepository, float defaultValue, string busName)
+            : base(settingsRepository, defaultValue)
         {
             try
             {
@@ -44,7 +45,7 @@ namespace Marmary.SettingsSystem.UnitySettings
             }
             catch (Exception e)
             {
-                Debug.LogError($"Failed to initialize MusicVolumeSettings: {e.Message}");
+                Debug.LogError($"Failed to initialize FMODVolumeSettings: {e.Message}");
             }
         }
 
@@ -53,7 +54,7 @@ namespace Marmary.SettingsSystem.UnitySettings
         #region Methods
 
         /// <summary>
-        ///     Sets the music volume and saves the updated value to the repository.
+        ///     Sets the music volume and updates the value in the repository.
         /// </summary>
         /// <param name="value">The new music volume value.</param>
         public override void Set(float value)
@@ -104,7 +105,7 @@ namespace Marmary.SettingsSystem.UnitySettings
         ///     Gets the current music volume as a formatted string.
         /// </summary>
         /// <returns>The current music volume as a string with two decimal places.</returns>
-        public override string GetCurrentSystenToString()
+        public override string GetCurrentSystemToString()
         {
             return GetCurrentSystem().ToString("F2");
         }
@@ -121,37 +122,7 @@ namespace Marmary.SettingsSystem.UnitySettings
             return GetCurrentMemory().ToString("F2");
         }
 
-        /// <summary>
-        ///     Not applicable for MusicVolumeSettings, as there are no predefined options.
-        /// </summary>
-        /// <returns>Throws a <see cref="NotImplementedException" />.</returns>
-        /// <exception cref="NotImplementedException">Always thrown.</exception>
-        public override List<float> GetOptions()
-        {
-            throw new NotImplementedException("MusicVolumeSettings does not have predefined options.");
-        }
-
-        /// <summary>
-        ///     Not applicable for MusicVolumeSettings, as there are no predefined options.
-        /// </summary>
-        /// <returns>Throws a <see cref="NotImplementedException" />.</returns>
-        /// <exception cref="NotImplementedException">Always thrown.</exception>
-        public override List<string> GetOptionsToString()
-        {
-            throw new NotImplementedException("MusicVolumeSettings does not have predefined options.");
-        }
-
-        /// <summary>
-        ///     Resolves the default value for the music volume setting from the provided repository.
-        ///     Ensures the value is clamped within the valid range [0, 1].
-        /// </summary>
-        /// <param name="repository">The repository containing the default volume value.</param>
-        /// <returns>The clamped default volume value.</returns>
-        private static float ResolveDefault(SaveRepositoryGeneric<float> repository)
-        {
-            return Mathf.Clamp01(repository.Value);
-        }
-
         #endregion
     }
 }
+#endif

@@ -11,7 +11,7 @@ namespace Marmary.SettingsSystem.UnitySettings
     ///     Manages dynamic frame rate settings based on available hardware options.
     ///     Detects supported frame rates and allows setting and retrieving the current frame rate.
     /// </summary>
-    public class FrameRateSettings : SettingsConfigureBase<int>
+    public class FrameRateSettings : SettingsConfigureBase<int>, ISettingsOptions<int>
     {
         #region Fields
 
@@ -25,18 +25,38 @@ namespace Marmary.SettingsSystem.UnitySettings
         #region Constructors and Injected
 
         /// <summary>
-        ///     Initializes a new instance of <see cref="FrameRateSettings" />, detecting possible hardware options.
-        ///     If the saved frame rate is invalid, initializes with the first available option.
+        ///     Initializes a new instance of <see cref="FrameRateSettings" />, detecting available hardware options
+        ///     and applying the saved frame rate (validated against those options).
         /// </summary>
         /// <param name="settingsRepository">Repository for saving and loading settings data.</param>
-        public FrameRateSettings(SaveRepositoryGeneric<int> settingsRepository)
-            : base(settingsRepository, ResolveDefault(settingsRepository))
+        /// <param name="defaultValue">The factory default frame rate the setting resets to.</param>
+        public FrameRateSettings(SaveRepository<int> settingsRepository, int defaultValue)
+            : base(settingsRepository, defaultValue)
         {
             _frameRateOptions = DetectAvailableFrameRates();
-            // If the saved value is not valid, initialize with the first available.
-            Set(!_frameRateOptions.Contains(settingsRepository.Value)
-                ? _frameRateOptions.First() //Set default?
-                : settingsRepository.Value);
+            Set(settingsRepository.Value);
+        }
+
+        #endregion
+
+        #region ISettingsOptions Members
+
+        /// <summary>
+        ///     Gets a list of available frame rate options.
+        /// </summary>
+        /// <returns>List of available frame rates.</returns>
+        public List<int> GetOptions()
+        {
+            return new List<int>(_frameRateOptions);
+        }
+
+        /// <summary>
+        ///     Gets a list of available frame rate options as strings.
+        /// </summary>
+        /// <returns>List of available frame rates as string values.</returns>
+        public List<string> GetOptionsToString()
+        {
+            return _frameRateOptions.Select(fr => fr.ToString()).ToList();
         }
 
         #endregion
@@ -44,13 +64,15 @@ namespace Marmary.SettingsSystem.UnitySettings
         #region Methods
 
         /// <summary>
-        ///     Sets the frame rate to the specified value if it is available; otherwise, uses the first available option.
-        ///     Updates the settings repository and saves the data.
+        ///     Sets the frame rate to the specified value if it is available; otherwise, uses the closest
+        ///     available option. Updates the settings repository in memory.
         /// </summary>
         /// <param name="value">The desired frame rate value.</param>
         public sealed override void Set(int value)
         {
-            var frameRateToSet = _frameRateOptions.Contains(value) ? value : _frameRateOptions.First();
+            var frameRateToSet = _frameRateOptions.Count == 0
+                ? value
+                : _frameRateOptions.OrderBy(option => Math.Abs(option - value)).ThenBy(option => option).First();
             Application.targetFrameRate = frameRateToSet;
             settingsRepository.Value = frameRateToSet;
             DebugEx.Log($"Frame rate changed to {frameRateToSet} FPS", SettingTag.Render);
@@ -87,58 +109,6 @@ namespace Marmary.SettingsSystem.UnitySettings
         public override int GetCurrentMemory()
         {
             return settingsRepository.Value;
-        }
-
-        /// <summary>
-        ///     Retrieves the current system setting and converts it to its string representation.
-        /// </summary>
-        /// <returns>A string representing the current system setting.</returns>
-        public override string GetCurrentSystenToString()
-        {
-            return GetCurrentSystem().ToString();
-        }
-
-        /// <summary>
-        ///     Retrieves the current memory value as a string representation.
-        /// </summary>
-        /// <returns>
-        ///     A string representation of the current memory value.
-        /// </returns>
-        public override string GetCurrentMemoryToString()
-        {
-            return GetCurrentMemory().ToString();
-        }
-
-        /// <summary>
-        ///     Gets a list of available frame rate options.
-        /// </summary>
-        /// <returns>List of available frame rates.</returns>
-        public override List<int> GetOptions()
-        {
-            return new List<int>(_frameRateOptions);
-        }
-
-        /// <summary>
-        ///     Gets a list of available frame rate options as strings.
-        /// </summary>
-        /// <returns>List of available frame rates as string values.</returns>
-        public override List<string> GetOptionsToString()
-        {
-            return _frameRateOptions.Select(fr => fr.ToString()).ToList();
-        }
-
-        /// <summary>
-        ///     Resolves the default frame rate to be used when no valid existing value is found in the repository.
-        ///     Determines the appropriate default from detected available options and repository data.
-        /// </summary>
-        /// <param name="repository">Repository that stores the saved frame rate value.</param>
-        /// <returns>The resolved default frame rate, either from the repository or from the available options.</returns>
-        private static int ResolveDefault(SaveRepositoryGeneric<int> repository)
-        {
-            var options = DetectAvailableFrameRates();
-            if (options.Count == 0) return repository.Value;
-
-            return options.Contains(repository.Value) ? repository.Value : options.First();
         }
 
         /// <summary>

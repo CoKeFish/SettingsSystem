@@ -9,19 +9,50 @@ namespace Marmary.SettingsSystem.UnitySettings
     ///     Manages the fullscreen display setting for the application.
     ///     Inherits from <see cref="SettingsConfigureBase{T}" /> with a boolean value indicating fullscreen state.
     /// </summary>
-    public sealed class FullScreenSettings : SettingsConfigureBase<bool>
+    public sealed class FullScreenSettings : SettingsConfigureBase<bool>, ISettingsOptions<bool>
     {
         #region Constructors and Injected
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="FullScreenSettings" /> class.
-        ///     Sets the fullscreen state based on the saved settings.
+        ///     Applies the fullscreen state loaded from the settings repository.
         /// </summary>
         /// <param name="settingsRepository">The repository containing the settings data.</param>
-        public FullScreenSettings(SaveRepositoryGeneric<bool> settingsRepository)
-            : base(settingsRepository, ResolveDefault(settingsRepository))
+        /// <param name="defaultValue">The factory default fullscreen state the setting resets to.</param>
+        public FullScreenSettings(SaveRepository<bool> settingsRepository, bool defaultValue)
+            : base(settingsRepository, defaultValue)
         {
             Set(settingsRepository.Value);
+        }
+
+        #endregion
+
+        #region ISettingsOptions Members
+
+        /// <summary>
+        ///     Gets the list of possible fullscreen options.
+        /// </summary>
+        /// <returns>A list containing true (enabled) and false (disabled).</returns>
+        public List<bool> GetOptions()
+        {
+            return new List<bool>
+            {
+                true,
+                false
+            };
+        }
+
+        /// <summary>
+        ///     Gets the list of possible fullscreen options as strings.
+        /// </summary>
+        /// <returns>A list containing "True" and "False".</returns>
+        public List<string> GetOptionsToString()
+        {
+            return new List<string>
+            {
+                "True",
+                "False"
+            };
         }
 
         #endregion
@@ -71,65 +102,6 @@ namespace Marmary.SettingsSystem.UnitySettings
         public override bool GetCurrentMemory()
         {
             return settingsRepository.Value;
-        }
-
-        /// <summary>
-        ///     Converts the current system setting value to its string representation.
-        /// </summary>
-        /// <returns>
-        ///     A string representation of the current system setting value.
-        /// </returns>
-        public override string GetCurrentSystenToString()
-        {
-            return GetCurrentSystem().ToString();
-        }
-
-        /// <summary>
-        ///     Retrieves the current memory value as a string representation.
-        /// </summary>
-        /// <returns>
-        ///     A string representation of the current memory value.
-        /// </returns>
-        public override string GetCurrentMemoryToString()
-        {
-            return GetCurrentMemory().ToString();
-        }
-
-        /// <summary>
-        ///     Gets the list of possible fullscreen options.
-        /// </summary>
-        /// <returns>A list containing true (enabled) and false (disabled).</returns>
-        public override List<bool> GetOptions()
-        {
-            return new List<bool>
-            {
-                true,
-                false
-            };
-        }
-
-        /// <summary>
-        ///     Gets the list of possible fullscreen options as strings.
-        /// </summary>
-        /// <returns>A list containing "True" and "False".</returns>
-        public override List<string> GetOptionsToString()
-        {
-            return new List<string>
-            {
-                "True",
-                "False"
-            };
-        }
-
-
-        /// <summary>
-        ///     Resolves the default value for the fullscreen setting based on the saved repository data.
-        /// </summary>
-        /// <param name="repository">The repository containing the settings data.</param>
-        /// <returns>The default fullscreen state as a boolean value.</returns>
-        private static bool ResolveDefault(SaveRepositoryGeneric<bool> repository)
-        {
-            return repository.Value;
         }
 
         #endregion

@@ -1,3 +1,4 @@
+#if I2_MODULE_ENABLED
 using System;
 using System.Collections.Generic;
 using DTT.ExtendedDebugLogs;
@@ -9,7 +10,7 @@ namespace Marmary.SettingsSystem.UnitySettings
     /// <summary>
     ///     Manages language settings, including available languages and current selection.
     /// </summary>
-    public class I2LanguageSettings : SettingsConfigureBase<string>
+    public class I2LanguageSettings : SettingsConfigureBase<string>, ISettingsOptions<string>
     {
         #region Fields
 
@@ -23,11 +24,13 @@ namespace Marmary.SettingsSystem.UnitySettings
         #region Constructors and Injected
 
         /// <summary>
-        ///     Initializes a new instance of LanguageSettings with the device's current language.
+        ///     Initializes a new instance of LanguageSettings, applying the saved language
+        ///     (or the device language when the saved one is not available).
         /// </summary>
-        /// <param name="settingsRepository"></param>
-        public I2LanguageSettings(SaveRepositoryGeneric<string> settingsRepository)
-            : base(settingsRepository, ResolveDefault(settingsRepository))
+        /// <param name="settingsRepository">Repository for saving and loading the language.</param>
+        /// <param name="defaultValue">The factory default language the setting resets to.</param>
+        public I2LanguageSettings(SaveRepository<string> settingsRepository, string defaultValue)
+            : base(settingsRepository, defaultValue)
         {
             if (LocalizationManager.Sources.Count == 0) LocalizationManager.UpdateSources();
             _languages = LocalizationManager.GetAllLanguages();
@@ -38,6 +41,22 @@ namespace Marmary.SettingsSystem.UnitySettings
                 ? settingsRepository.Value
                 : LocalizationManager.GetCurrentDeviceLanguage();
             Set(initialLanguage);
+        }
+
+        #endregion
+
+        #region ISettingsOptions Members
+
+        /// <inheritdoc />
+        public List<string> GetOptions()
+        {
+            return _languages ?? new List<string>(LocalizationManager.GetAllLanguages());
+        }
+
+        /// <inheritdoc />
+        public List<string> GetOptionsToString()
+        {
+            return GetOptions();
         }
 
         #endregion
@@ -57,6 +76,7 @@ namespace Marmary.SettingsSystem.UnitySettings
                 LocalizationManager.CurrentLanguage = LocalizationManager.GetCurrentDeviceLanguage();
                 settingsRepository.Value = LocalizationManager.GetCurrentDeviceLanguage();
             }
+
             DebugEx.Log($"Language changed to {LocalizationManager.CurrentLanguage}", SettingTag.Language);
         }
 
@@ -81,57 +101,7 @@ namespace Marmary.SettingsSystem.UnitySettings
             return settingsRepository.Value;
         }
 
-        /// <summary>
-        ///     Returns the current language as a string.
-        /// </summary>
-        public override string GetCurrentSystenToString()
-        {
-            return GetCurrentSystem();
-        }
-
-        /// <summary>
-        ///     Retrieves the current in-memory value of the setting as a string.
-        /// </summary>
-        /// <returns>
-        ///     A string representation of the current in-memory value of the setting.
-        /// </returns>
-        public override string GetCurrentMemoryToString()
-        {
-            return GetCurrentMemory();
-        }
-
-        /// <inheritdoc />
-        public override List<string> GetOptions()
-        {
-            return _languages ?? new List<string>(LocalizationManager.GetAllLanguages());
-        }
-
-        /// <inheritdoc />
-        public override List<string> GetOptionsToString()
-        {
-            return GetOptions();
-        }
-
-        /// <summary>
-        ///     Resolves the default language setting based on saved preferences, available languages, and device language.
-        /// </summary>
-        /// <param name="repository">The repository containing the saved language preference.</param>
-        /// <returns>The resolved default language as a string.</returns>
-        private static string ResolveDefault(SaveRepositoryGeneric<string> repository)
-        {
-            if (LocalizationManager.Sources.Count == 0) LocalizationManager.UpdateSources();
-
-            var availableLanguages = LocalizationManager.GetAllLanguages();
-            if (availableLanguages == null || availableLanguages.Count == 0)
-                return LocalizationManager.GetCurrentDeviceLanguage();
-
-            var savedLanguage = repository.Value;
-            if (!string.IsNullOrEmpty(savedLanguage) && availableLanguages.Contains(savedLanguage))
-                return savedLanguage;
-
-            return LocalizationManager.GetCurrentDeviceLanguage();
-        }
-
         #endregion
     }
 }
+#endif

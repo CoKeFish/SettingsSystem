@@ -10,7 +10,7 @@ namespace Marmary.SettingsSystem.UnitySettings
     ///     Manages screen resolution settings, providing available options and applying user selections.
     ///     Inherits from <see cref="SettingsConfigureBase{Vector2Int}" />.
     /// </summary>
-    public sealed class ResolutionSettings : SettingsConfigureBase<Vector2Int>
+    public sealed class ResolutionSettings : SettingsConfigureBase<Vector2Int>, ISettingsOptions<Vector2Int>
     {
         #region Fields
 
@@ -25,11 +25,12 @@ namespace Marmary.SettingsSystem.UnitySettings
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ResolutionSettings" /> class.
-        ///     Detects available resolutions and sets the current resolution based on saved settings.
+        ///     Detects available resolutions and applies the saved resolution (validated against them).
         /// </summary>
         /// <param name="settingsRepository">Repository for saving and loading settings data.</param>
-        public ResolutionSettings(SaveRepositoryGeneric<Vector2Int> settingsRepository)
-            : base(settingsRepository, ResolveDefault(settingsRepository))
+        /// <param name="defaultValue">The factory default resolution the setting resets to.</param>
+        public ResolutionSettings(SaveRepository<Vector2Int> settingsRepository, Vector2Int defaultValue)
+            : base(settingsRepository, defaultValue)
         {
             _resolutionOptions = DetectAvailableResolutions();
             if (_resolutionOptions.Count == 0)
@@ -43,6 +44,28 @@ namespace Marmary.SettingsSystem.UnitySettings
             if (!_resolutionOptions.Contains(savedValue)) savedValue = _resolutionOptions[0];
 
             Set(savedValue);
+        }
+
+        #endregion
+
+        #region ISettingsOptions Members
+
+        /// <summary>
+        ///     Gets the list of available resolution options.
+        /// </summary>
+        /// <returns>List of available resolutions as <see cref="Vector2Int" />.</returns>
+        public List<Vector2Int> GetOptions()
+        {
+            return new List<Vector2Int>(_resolutionOptions);
+        }
+
+        /// <summary>
+        ///     Gets the list of available resolution options as formatted strings.
+        /// </summary>
+        /// <returns>List of resolution strings in the format "width X height".</returns>
+        public List<string> GetOptionsToString()
+        {
+            return _resolutionOptions.Select(Parse).ToList();
         }
 
         #endregion
@@ -95,37 +118,18 @@ namespace Marmary.SettingsSystem.UnitySettings
         ///     Gets the current screen resolution as a formatted string.
         /// </summary>
         /// <returns>Current resolution in the format "width X height".</returns>
-        public override string GetCurrentSystenToString()
+        public override string GetCurrentSystemToString()
         {
             return Parse(GetCurrentSystem());
         }
 
         /// <summary>
-        ///     Retrieves the current memory setting as a string representation.
-        ///     Converts the current configuration value into a readable string format.
+        ///     Retrieves the current memory setting as a formatted string.
         /// </summary>
         /// <returns>The string representation of the current memory setting.</returns>
         public override string GetCurrentMemoryToString()
         {
             return Parse(GetCurrentMemory());
-        }
-
-        /// <summary>
-        ///     Gets the list of available resolution options.
-        /// </summary>
-        /// <returns>List of available resolutions as <see cref="Vector2Int" />.</returns>
-        public override List<Vector2Int> GetOptions()
-        {
-            return new List<Vector2Int>(_resolutionOptions);
-        }
-
-        /// <summary>
-        ///     Gets the list of available resolution options as formatted strings.
-        /// </summary>
-        /// <returns>List of resolution strings in the format "width X height".</returns>
-        public override List<string> GetOptionsToString()
-        {
-            return _resolutionOptions.Select(Parse).ToList();
         }
 
         /// <summary>
@@ -151,24 +155,6 @@ namespace Marmary.SettingsSystem.UnitySettings
             }
 
             return false;
-        }
-
-        /// <summary>
-        ///     Determines the default screen resolution to be applied based on the available options
-        ///     and the saved repository value.
-        /// </summary>
-        /// <param name="repository">The repository containing the saved resolution data.</param>
-        /// <returns>A <see cref="Vector2Int" /> representing the default resolution to be used.</returns>
-        private static Vector2Int ResolveDefault(SaveRepositoryGeneric<Vector2Int> repository)
-        {
-            var options = DetectAvailableResolutions();
-            if (options.Count == 0)
-            {
-                var current = Screen.currentResolution;
-                return new Vector2Int(current.width, current.height);
-            }
-
-            return options.Contains(repository.Value) ? repository.Value : options[0];
         }
 
         /// <summary>
