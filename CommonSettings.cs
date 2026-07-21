@@ -46,6 +46,12 @@ namespace Marmary.SettingsSystem
         ///     Represents the setting type for controlling the master volume level in the system.
         ///     This setting typically adjusts the overall audio output for the application.
         /// </summary>
-        MasterVolume
+        MasterVolume,
+
+        /// <summary>
+        ///     Represents the setting type for controlling the sound-effects volume level,
+        ///     independent from music and master volume.
+        /// </summary>
+        SfxVolume
     }
 }

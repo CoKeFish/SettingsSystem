@@ -6,7 +6,6 @@ using FMOD.Studio;
 using FMODUnity;
 using Marmary.SaveSystem;
 using UnityEngine;
-using Debug = UnityEngine.Debug;
 
 namespace Marmary.SettingsSystem.UnitySettings
 {
@@ -15,14 +14,24 @@ namespace Marmary.SettingsSystem.UnitySettings
     ///     Provides methods to set, retrieve, and serialize the music volume,
     ///     and persists changes using a settings repository.
     /// </summary>
+    /// <remarks>
+    ///     The FMOD bus is resolved lazily on first use: settings are constructed eagerly
+    ///     at container build, BEFORE FMOD loads its banks — touching RuntimeManager there
+    ///     initializes FMOD too early and breaks audio. Never resolve the bus in the constructor.
+    /// </remarks>
     public sealed class FMODVolumeSettings : SettingsConfigureBase<float>
     {
         #region Fields
 
         /// <summary>
-        ///     Reference to the FMOD music bus.
+        ///     Reference to the FMOD bus, resolved lazily by <see cref="EnsureBus" />.
         /// </summary>
         private Bus _musicBus;
+
+        /// <summary>
+        ///     The name of the FMOD bus to control (e.g. "bus:/" for master).
+        /// </summary>
+        private readonly string _busName;
 
         #endregion
 
@@ -30,7 +39,7 @@ namespace Marmary.SettingsSystem.UnitySettings
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="FMODVolumeSettings" /> class.
-        ///     Applies the volume loaded from the settings repository to the FMOD bus.
+        ///     Does not touch FMOD; the bus is resolved lazily on first use.
         /// </summary>
         /// <param name="settingsRepository">The repository containing settings data.</param>
         /// <param name="defaultValue">The factory default volume the setting resets to.</param>
@@ -38,15 +47,8 @@ namespace Marmary.SettingsSystem.UnitySettings
         public FMODVolumeSettings(SaveRepository<float> settingsRepository, float defaultValue, string busName)
             : base(settingsRepository, defaultValue)
         {
-            try
-            {
-                _musicBus = RuntimeManager.GetBus(busName);
-                Set(settingsRepository.Value);
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"Failed to initialize FMODVolumeSettings: {e.Message}");
-            }
+            _busName = busName;
+            settingsRepository.Value = Mathf.Clamp01(settingsRepository.Value);
         }
 
         #endregion
@@ -60,7 +62,7 @@ namespace Marmary.SettingsSystem.UnitySettings
         public override void Set(float value)
         {
             var clampedValue = Mathf.Clamp01(value);
-            if (_musicBus.isValid()) _musicBus.setVolume(clampedValue);
+            if (EnsureBus()) _musicBus.setVolume(clampedValue);
 
             settingsRepository.Value = clampedValue;
             DebugEx.Log($"Volume changed to {clampedValue:F2}", SettingTag.Audio);
@@ -85,7 +87,7 @@ namespace Marmary.SettingsSystem.UnitySettings
         /// <returns>The current music volume as a float.</returns>
         public override float GetCurrentSystem()
         {
-            if (_musicBus.isValid() && _musicBus.getVolume(out var volume) == RESULT.OK) return volume;
+            if (EnsureBus() && _musicBus.getVolume(out var volume) == RESULT.OK) return volume;
 
             return settingsRepository.Value;
         }
@@ -120,6 +122,32 @@ namespace Marmary.SettingsSystem.UnitySettings
         public override string GetCurrentMemoryToString()
         {
             return GetCurrentMemory().ToString("F2");
+        }
+
+        /// <summary>
+        ///     Resolves the FMOD bus if it is not valid yet. Safe to call before FMOD is
+        ///     initialized: it simply reports failure and retries on the next use.
+        ///     On first successful resolution, applies the persisted volume to the bus.
+        /// </summary>
+        /// <returns><c>true</c> when the bus is valid and usable; otherwise, <c>false</c>.</returns>
+        private bool EnsureBus()
+        {
+            if (_musicBus.isValid()) return true;
+
+            try
+            {
+                _musicBus = RuntimeManager.GetBus(_busName);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+            if (!_musicBus.isValid()) return false;
+
+            // First successful resolve: apply the persisted volume.
+            _musicBus.setVolume(settingsRepository.Value);
+            return true;
         }
 
         #endregion
